@@ -15,9 +15,9 @@
       background: #6a0dad;
       color: white;
       border: none;
-      padding: 0px 0px;
-      margin-top: 0px;
-      border-radius: 0px;
+      padding: 12px 24px;
+      margin-top: 20px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
     }
