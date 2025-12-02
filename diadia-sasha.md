@@ -2,97 +2,62 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Авто-звук</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
       background: #0f0c1a;
       color: #e0d6ff;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20vh 10%;
+    }
+    button {
+      background: #6a0dad;
+      color: white;
+      border: none;
+      padding: 0px 0px;
+      margin-top: 0px;
+      border-radius: 0px;
       cursor: pointer;
-      overflow: hidden;
-      user-select: none;
-      transition: background 0.3s;
+      font-size: 16px;
     }
-
-    body:active {
-      background: #1a142d;
-    }
-
-    body:hover::before {
-      opacity: 0.15;
-    }
-
-    /* Неоновая подсветка при наведении */
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at center, #a366ff 0%, transparent 70%);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s;
-    }
-
+    button:hover { opacity: 0.9; }
     h1 {
-      font-size: 2.8rem;
-      text-shadow: 0 0 12px #a366ff, 0 0 20px #7a3dd1;
-      margin-bottom: 1rem;
-      letter-spacing: 1px;
+      text-shadow: 0 0 10px #a366ff;
     }
-
-    #status {
-      font-size: 1.2rem;
-      opacity: 0.8;
-      max-width: 80%;
-      line-height: 1.5;
-    }
-
-    /* Скрыть стандартные элементы управления */
-    audio { display: none; }
   </style>
 </head>
 <body>
 
-  <h1>🔊 Кликни в любом месте</h1>
-  <p id="status">Первое касание разрешит звук (политика браузера)</p>
+  <h1>🔊 Звук загружается...</h1>
+  <p id="status">Ожидание взаимодействия для включения звука (политика браузера)</p>
 
-  <!-- Base64: 440 Гц, 0.5 сек, MP3 (~2 КБ) -->
+  <!-- Аудио в Base64: 0.5 секунды тона 440 Гц (A4), MP3, ~2 КБ -->
   <audio id="sound" src="diadia-sasha.mp3"></audio>
+
   <script>
     const audio = document.getElementById('sound');
     const status = document.getElementById('status');
-    const body = document.body;
 
-    const enableSound = () => {
-      // Размучиваем и играем
-      audio.muted = false;
-      audio
-        .play()
+    // Пытаемся проиграть при загрузке
+    const tryPlay = () => {
+      audio.play()
         .then(() => {
-          status.textContent = '✅ Звук включён! Кликай ещё — будет играть.';
-          body.style.background = '#140f28';
-          document.querySelector('h1').textContent = '🎧 Звук активен!';
+          status.textContent = '✅ Звук воспроизведён!';
         })
         .catch(err => {
-          console.warn('Audio play failed:', err);
+          status.textContent = '🔇 Автоплей заблокирован. Нажмите кнопку ниже.';
+          document.body.insertAdjacentHTML('beforeend', 
+            '<button onclick="document.getElementById(\'sound\').play().then(()=>this.textContent=\'✅ Играет!\').catch(()=>{}); this.disabled=true;">▶️ Включить звук</button>'
+          );
         });
     };
 
-    // Первое касание/клик — включает звук
-    body.addEventListener('click', enableSound, { once: true });
-    body.addEventListener('touchstart', enableSound, { once: true });
+    // Сразу пробуем (иногда срабатывает на некоторых устройствах)
+    tryPlay();
+
+    // И по первому клику — точно сработает
+    document.addEventListener('click', tryPlay, { once: true });
   </script>
 
 </body>
